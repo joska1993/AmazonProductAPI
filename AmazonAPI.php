@@ -310,13 +310,25 @@ class AmazonAPI
 
 			if ( $responseItem->OfferSummary )
 			{
-				$item['lowestPrice'] = ( (float) $responseItem->OfferSummary->LowestNewPrice->Amount ) / 100.0;
+				$item['precioActual'] = ( (float) $responseItem->OfferSummary->LowestNewPrice->Amount ) / 100.0;
+				$item['precioAnterior'] = ( (float) $responseItem->Offers->Offer->OfferListing->Price->Amount ) / 100.0;
+				$item['precioAhorro'] = ( (float) $responseItem->Offers->Offer->OfferListing->AmountSaved->Amount ) / 100.0;
+				$item['porcentajeDecuento'] = ( (float) $responseItem->Offers->Offer->OfferListing->PercentageSaved );
 			}
 			else
 			{
-				$item['lowestPrice'] = 0.0;
+				$item['precioActual'] = 0.0;
 			}
-
+			
+			// Caracteristicas
+			$item['caracteristicas'] = array();
+			foreach($responseItem->ItemAttributes->Feature as $caracteristica){
+				array_push($item['caracteristicas'], $caracteristica);
+			}
+			
+			// Categoría
+			$item['categoria'] = (string) $responseItem->ItemAttributes->ProductGroup;
+			
 			// Images
 			$item['largeImage'] = (string) $responseItem->LargeImage->URL;
 			$item['mediumImage'] = (string) $responseItem->MediumImage->URL;
